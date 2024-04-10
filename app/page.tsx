@@ -1,95 +1,195 @@
-import { IoEarthOutline, IoPlanetOutline } from "react-icons/io5";
+"use client";
 
-import { moredya } from "@/app/fonts";
-import { GiStripedSun } from "react-icons/gi";
-import { TbTemperature } from "react-icons/tb";
-import { Earth } from "../components/planets/models/earth";
+import {
+  AvgTemp,
+  Diameter,
+  SunDistance,
+  YearLength,
+} from "@/components/main-infos";
+import { useRef, useState } from "react";
+
+import { zebulon } from "@/app/fonts";
+import AboutPlanet from "@/components/about-planet";
+import BottomInfo from "@/components/bottom-info";
+import Composition from "@/components/composition";
+import LinkBtn from "@/components/link-btn";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
+import { CgClose } from "react-icons/cg";
+import { Mars } from "../components/planets/models/mars";
 
 export default function Home() {
-  return (
-    <div className="w-screen h-screen tems-center bg-black">
-      <Earth />
+  const marsRef = useRef(null);
+  const [isOpenedFact, setIsOpenedFact] = useState(false);
+  useGSAP(
+    () => {
+      const itemsLeft: HTMLElement[] = gsap.utils.toArray(".info-left-item");
+      const itemsBottom: HTMLElement[] =
+        gsap.utils.toArray(".info-bottom-item");
+      const tl = gsap.timeline();
+      gsap.from(".planet-title", {
+        y: -100,
+        opacity: 0,
+        duration: 1,
+        delay: 0.5,
+      });
 
-      <div className="w-[50vw] flex flex-col justify-center p-10 h-screen absolute left-0 top-0">
-        <h1 className={`${moredya.className} text-[12vh] text-white`}>Mars</h1>
-        <div className="flex items-center justify-start space-x-8">
-          <div className="flex items-center gap-3 justify-start ">
-            <GiStripedSun className="text-neutral-500 text-3xl" />
-            <div className="flex flex-col items-start justify-start ">
-              <p className="text-white text-sm">43,3 Million km</p>
-              <p className="text-neutral-400 font-medium text-sm  ">
-                from the Sun
-              </p>
-            </div>
+      itemsLeft.forEach((item, index) => {
+        tl.from(item, {
+          x: -100,
+          opacity: 0,
+        });
+      });
+      itemsBottom.forEach((item, index) => {
+        tl.from(item, {
+          y: 100,
+          opacity: 0,
+        });
+      });
+    },
+    { scope: marsRef }
+  );
+
+  const handleFacts = () => {
+    const tl = gsap.timeline();
+    const listItems: HTMLElement[] = gsap.utils.toArray(".facts-list-item");
+    if (!isOpenedFact) {
+      setIsOpenedFact(true);
+      tl.to(".facts-modal", {
+        x: 0,
+        duration: 0.5,
+        ease: "back.out(.7)",
+      });
+      listItems.forEach((item, index) => {
+        tl.from(item, {
+          opacity: 0,
+          x: -100,
+          duration: 0.3,
+          ease: "power4.out",
+        });
+      });
+    } else {
+      handleCloseFacts();
+    }
+  };
+
+  const handleCloseFacts = () => {
+    if (isOpenedFact) {
+      gsap.to(".facts-modal", {
+        x: "-100%",
+        duration: 0.5,
+        ease: "back.in(.7)",
+        onComplete: () => {
+          setIsOpenedFact(false);
+        },
+      });
+    }
+  };
+
+  return (
+    <div className="w-screen h-screen tems-center " ref={marsRef}>
+      <div id="stars" className="opacity-30"></div>
+      <div
+        className="absolute facts-modal w-[20vw] h-full bottom-0
+      transform -translate-x-full flex flex-col ga
+      p-10 overflow-y-auto  bg-neutral-900/90 backdrop-blur-xl z-[110] "
+      >
+        <div className="flex flex-col items-start gap-10 ">
+          <div className="flex items-start justify-between w-full relative gap-4">
+            <h3 className="text-neutral-300 text-2xl  font-bold ">
+              Facts about Mars
+            </h3>
+            <button
+              className="bg-transparent outline-none border-none text-white focus:outline-none"
+              onClick={handleCloseFacts}
+            >
+              <CgClose className="text-2xl" />
+            </button>
           </div>
-          <div className="flex items-center gap-3 justify-start ">
-            <IoEarthOutline className="text-neutral-500 text-3xl" />
-            <div className="flex flex-col items-start justify-start ">
-              <p className="text-white text-sm">64,2 Eearth Years</p>
-              <p className="text-neutral-400 font-medium text-sm  ">
-                length of year
-              </p>
-            </div>
-          </div>
+          <ul className="flex flex-col items-start gap-4 list-disc list-inside">
+            <li className="text-neutral-400 text-md facts-list-item">
+              Mars is the fourth planet from the Sun and the second-smallest
+              planet in the Solar System, being larger than only Mercury.
+            </li>
+            <li className="text-neutral-400 text-md facts-list-item">
+              In English, Mars carries the name of the Roman god of war and is
+              often referred to as the &apos;Red Planet&apos;.
+            </li>
+            <li className="text-neutral-400 text-md facts-list-item">
+              The days and seasons are similar to those on Earth, but they last
+              longer.
+            </li>
+            <li className="text-neutral-400 text-md facts-list-item">
+              Mars has the largest volcano in the Solar System, Olympus Mons.
+            </li>
+            <li className="text-neutral-400 text-md facts-list-item">
+              Mars has two moons, Phobos and Deimos.
+            </li>
+          </ul>
         </div>
-        <div className="flex items-center justify-start space-x-8 mt-6">
-          <div className="flex items-center gap-3 justify-start ">
-            <IoPlanetOutline className="text-neutral-500 text-3xl" />
-            <div className="flex flex-col items-start justify-start ">
-              <p className="text-white text-sm">12,742 km</p>
-              <p className="text-neutral-400 font-medium text-sm  ">diameter</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 justify-start ">
-            <TbTemperature className="text-neutral-500 text-3xl" />
-            <div className="flex flex-col items-start justify-start ">
-              <p className="text-white text-sm">-94°C to 427°C</p>
-              <p className="text-neutral-400 font-medium text-sm  ">
-                average temperature
-              </p>
-            </div>
-          </div>
+      </div>
+      <Mars />
+      <div className="w-[30vw] flex flex-col justify-center p-10 h-screen absolute left-0 top-0">
+        <h1
+          className={`${zebulon.className} text-[12vh] text-white planet-title
+          first-letter:text-[16vh]
+          `}
+        >
+          Mars
+        </h1>
+        <div className="flex items-center justify-start space-x-8">
+          <SunDistance distance="227.9 million km" />
+          <YearLength length="687 days" />
+        </div>
+        <div className="flex items-center justify-start space-x-8 mt-6 ">
+          <Diameter diameter="6,779 km" />
+          <AvgTemp temp="-63°C to 20°C" />
         </div>
       </div>
       <div className="w-[30vw] absolute h-screen flex flex-col justify-center right-0 top-0 p-10 ">
-        <h2 className={`${moredya.className} text-[3vh] text-white indent-6`}>
-          About Mars
-        </h2>
-        <p className="text-neutral-400  text-sm leading-7 indent-6">
-          The fourth planet from the Sun and the second-smallest planet in the
-          Solar System, being larger than only Mercury. In English, Mars carries
-          a name of the Roman god of war and is often referred to as the
-          &quot;Red Planet&quot;. The latter refers to the effect of the iron
-          oxide prevalent on Mars&apos;s surface, which gives it a reddish
-          appearance distinctive among the astronomical bodies visible to the
-          naked eye.
+        <AboutPlanet
+          title="About Mars"
+          description="Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System, being larger than only Mercury. In English, Mars carries the name of the Roman god of war and is often referred to as the 'Red Planet'."
+        />
+        <div className="flex gap-8 items-start flex-wrap justify-start mt-6 ">
+          <Composition
+            compositions={[
+              { name: "Carbon Dioxide (CO₂)", value: "95.32%" },
+              { name: "Nitrogen (N₂)", value: "~2.7%" },
+              { name: "Argon (Ar)", value: "~1.6%" },
+              { name: "Oxygen (O₂)", value: "~0.13%" },
+              { name: "Carbon Monoxide (CO)", value: "~0.08%" },
+              {
+                name: "Other gases (water vapor, etc.)",
+                value: "trace amounts",
+              },
+            ]}
+          />
+        </div>
+        <LinkBtn href="/mars" label="Mars News & Features" />
+        <button
+          onClick={handleFacts}
+          className="bg-white text-neutral-900 h-12 p-2  uppercase font-light text-[1.8vh] tracking-widest mt-4 z-[101]
+          hover:bg-neutral-100 focus:outline-none
+          disabled:bg-neutral-400 disabled:cursor-not-allowed"
+        >
+          More Facts
+        </button>
+
+        <p className="text-neutral-400 text-sm mt-4">
+          * All the information is based on the latest data from NASA.
         </p>
       </div>
       <div className="absolute flex items-center justify-between w-full bottom-0 right-0 p-10">
-        <div className="flex flex-col items-start justify-start">
-          <p className="text-neutral-500 font-medium text-sm">Planet Type</p>
-          <p className="text-white text-2xl">Terrestrial</p>
-        </div>
-        <div className="flex flex-col items-start justify-start">
-          <p className="text-neutral-500 font-medium text-sm">Satellites</p>
-          <p className="text-white text-2xl">80</p>
-        </div>
-        <div className="flex flex-col items-start justify-start">
-          <p className="text-neutral-500 font-medium text-sm">Inclination</p>
-          <p className="text-white text-2xl">7,231231°</p>
-        </div>
-        <div className="flex flex-col items-start justify-start">
-          <p className="text-neutral-500 font-medium text-sm">
-            Orbital Velocity
-          </p>
-          <p className="text-white text-2xl">9,69 km/s</p>
-        </div>
-        <div className="flex flex-col items-start justify-start">
-          <p className="text-neutral-500 font-medium text-sm">
-            Sideral Circulation Period
-          </p>
-          <p className="text-white text-2xl">10 794,22 days</p>
-        </div>
+        <BottomInfo
+          infos={[
+            { name: "Planet Type", value: "Terrestrial" },
+            { name: "Satellites", value: "2" },
+            { name: "Inclination", value: "25,19°" },
+            { name: "Orbital Velocity", value: "24 km/s" },
+            { name: "Sideral Circulation Period", value: "24,6 hours" },
+          ]}
+        />
       </div>
     </div>
   );
