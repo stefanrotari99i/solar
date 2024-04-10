@@ -34,13 +34,13 @@ export default function Home() {
         delay: 0.5,
       });
 
-      itemsLeft.forEach((item, index) => {
+      itemsLeft.forEach((item) => {
         tl.from(item, {
           x: -100,
           opacity: 0,
         });
       });
-      itemsBottom.forEach((item, index) => {
+      itemsBottom.forEach((item) => {
         tl.from(item, {
           y: 100,
           opacity: 0,
